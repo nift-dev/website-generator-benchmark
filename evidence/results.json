@@ -1,0 +1,65 @@
+{
+  "schema": 2,
+  "workload": "clean production build",
+  "pages": 10000,
+  "fixture_note": "Equivalent small pages generated from tool-native source; dependency installation and fixture generation are outside timed runs.",
+  "warmups": 1,
+  "repetitions": 3,
+  "machine": {
+    "system": "Linux",
+    "release": "7.0.0-29-generic",
+    "machine": "x86_64",
+    "processor": "",
+    "python": "3.14.4",
+    "cpu_count": 20,
+    "node": "v22.22.1"
+  },
+  "tools": {
+    "Nift": "Nift v4.0.7",
+    "Hugo": "hugo v0.164.0-ce2470e7012b5ab5fc4e10ebe4027e9f8d9e00dc linux/amd64 BuildDate=2026-07-06T16:39:30Z VendorInfo=gohugoio",
+    "Astro": "Astro 7.2.4",
+    "VitePress": "VitePress 1.6.4"
+  },
+  "results": {
+    "Nift": {
+      "seconds": [
+        0.14348647400038317,
+        0.14123210500110872,
+        0.14254764300130773
+      ],
+      "median_seconds": 0.14254764300130773,
+      "min_seconds": 0.14123210500110872,
+      "max_seconds": 0.14348647400038317
+    },
+    "Hugo": {
+      "seconds": [
+        0.4339081179932691,
+        0.43386189598822966,
+        0.4466778400092153
+      ],
+      "median_seconds": 0.4339081179932691,
+      "min_seconds": 0.43386189598822966,
+      "max_seconds": 0.4466778400092153
+    },
+    "Astro": {
+      "seconds": [
+        121.04697784899327,
+        119.12462295799924,
+        121.44105392899655
+      ],
+      "median_seconds": 121.04697784899327,
+      "min_seconds": 119.12462295799924,
+      "max_seconds": 121.44105392899655
+    },
+    "VitePress": {
+      "seconds": [
+        56.719792203002726,
+        57.01047090798966,
+        56.78351858400856
+      ],
+      "median_seconds": 56.78351858400856,
+      "min_seconds": 56.719792203002726,
+      "max_seconds": 57.01047090798966
+    }
+  }
+}
