@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible Nift/Hugo/Astro/Next.js/VitePress clean-build benchmark.
+"""Reproducible Nift/Hugo/Astro/VitePress clean-build benchmark.
 
 Fixture generation and dependency installation are outside the timed region.
 Every requested tool must exist and every run must succeed before results are
@@ -56,17 +56,6 @@ def astro_fixture(base,n,project):
     astro=Path(project).resolve()/"node_modules/.bin/astro"
     return p,[str(astro),"build","--silent"],["dist",".astro"]
 
-def next_fixture(base,n,project):
-    p=base/"next"; (p/"pages").mkdir(parents=True); link_node_modules(p,project)
-    (p/"next.config.mjs").write_text('export default { output: "export", poweredByHeader: false };\n')
-    (p/"package.json").write_text('{"private":true,"type":"module"}\n')
-    for i in range(n):
-        fn="index.jsx" if i==0 else f"page-{i}.jsx"
-        (p/"pages"/fn).write_text(
-            "export default function Page(){return <><h1>Page "+str(i)+"</h1><p>Equivalent benchmark content.</p></>}\n"
-        )
-    nxt=Path(project).resolve()/"node_modules/.bin/next"
-    return p,[str(nxt),"build"],[".next","out"]
 
 def vitepress_fixture(base,n,project):
     p=base/"vitepress"; docs=p/"docs"; cfg=docs/".vitepress"; cfg.mkdir(parents=True); link_node_modules(p,project)
@@ -99,7 +88,7 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--nift",required=True)
     ap.add_argument("--hugo",required=True)
-    ap.add_argument("--node-project",required=True,help="Project containing pinned Astro/Next.js/VitePress node_modules")
+    ap.add_argument("--node-project",required=True,help="Project containing pinned Astro/VitePress node_modules")
     ap.add_argument("--pages",type=int,default=10000)
     ap.add_argument("--repetitions",type=int,default=7)
     ap.add_argument("--warmups",type=int,default=2)
@@ -107,14 +96,13 @@ def main():
     a=ap.parse_args()
 
     nift=str(Path(a.nift).resolve()); hugo=str(Path(a.hugo).resolve()); project=Path(a.node_project).resolve()
-    for x in [nift,hugo,project/"node_modules/.bin/astro",project/"node_modules/.bin/next",project/"node_modules/.bin/vitepress"]:
+    for x in [nift,hugo,project/"node_modules/.bin/astro",project/"node_modules/.bin/vitepress"]:
         if not Path(x).exists(): raise SystemExit(f"missing benchmark dependency: {x}")
 
     tools={
         "Nift":version([nift,"--version"]),
         "Hugo":version([hugo,"version"]),
         "Astro":version([str(project/"node_modules/.bin/astro"),"--version"]),
-        "Next.js":version([str(project/"node_modules/.bin/next"),"--version"]),
         "VitePress":version([str(project/"node_modules/.bin/vitepress"),"--version"]),
     }
 
@@ -125,14 +113,20 @@ def main():
             "Nift":nift_fixture(base,a.pages,nift),
             "Hugo":hugo_fixture(base,a.pages,hugo),
             "Astro":astro_fixture(base,a.pages,project),
-            "Next.js":next_fixture(base,a.pages,project),
             "VitePress":vitepress_fixture(base,a.pages,project),
         }
         for name,(cwd,cmd,outputs) in fixtures.items():
             samples=[]
-            for i in range(a.warmups+a.repetitions):
+            total=a.warmups+a.repetitions
+            for i in range(total):
+                if i < a.warmups:
+                    label=f"warmup {i+1}/{a.warmups}"
+                else:
+                    label=f"measured run {i-a.warmups+1}/{a.repetitions}"
+                print(f"[{name}] {label}", flush=True)
                 clean_outputs(cwd,outputs)
                 elapsed=run(cmd,cwd)
+                print(f"[{name}] {label} finished in {elapsed:.3f}s", flush=True)
                 if i>=a.warmups: samples.append(elapsed)
             results[name]={
                 "seconds":samples,

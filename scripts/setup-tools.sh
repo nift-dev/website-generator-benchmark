@@ -24,7 +24,7 @@ if [ ! -x "$TOOLS/hugo" ]; then
   chmod 0755 "$TOOLS/hugo"
 fi
 
-echo "Installing pinned Astro/Next.js/VitePress dependencies..."
+echo "Installing pinned Astro/VitePress dependencies..."
 cd "$ROOT"
 npm install --ignore-scripts --no-audit --no-fund
 
@@ -32,5 +32,4 @@ echo
 echo "Pinned tools ready:"
 "$TOOLS/hugo" version | head -1
 "$ROOT/node_modules/.bin/astro" --version
-"$ROOT/node_modules/.bin/next" --version
 "$ROOT/node_modules/.bin/vitepress" --version

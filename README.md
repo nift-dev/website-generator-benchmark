@@ -2,14 +2,12 @@
 
 A standalone, evidence-first benchmark site for Nift comparisons.
 
-The primary workload is a **10,000-page clean production build** using pinned Nift, Hugo, Astro, Next.js and VitePress versions. Fixture generation and dependency installation are outside timed runs. The harness performs warmups followed by repeated measured builds and refuses to write a partial comparison.
+The primary workload is a **10,000-page clean production build** using pinned Nift, Hugo, Astro and VitePress versions. Fixture generation and dependency installation are outside timed runs. The harness performs warmups followed by repeated measured builds and refuses to write a partial comparison.
 
 ## Pinned competitors
 
 - Hugo 0.164.0
 - Astro 7.2.4
-- Next.js 16.3.2
-- React / React DOM 19.2.8
 - VitePress 1.6.4
 
 Nift is supplied explicitly with `--nift`, so the result records the exact binary version actually measured.
