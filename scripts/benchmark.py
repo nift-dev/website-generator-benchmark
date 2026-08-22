@@ -139,6 +139,85 @@ def clean_outputs(cwd,paths):
         if p.is_symlink() or p.is_file(): p.unlink(missing_ok=True)
         else: shutil.rmtree(p,ignore_errors=True)
 
+def sample_summary(time_samples,rss_samples):
+    return {
+        "seconds":time_samples,
+        "median_seconds":statistics.median(time_samples),
+        "min_seconds":min(time_samples),
+        "max_seconds":max(time_samples),
+        "peak_rss_mib":rss_samples,
+        "median_peak_rss_mib":statistics.median(rss_samples),
+        "min_peak_rss_mib":min(rss_samples),
+        "max_peak_rss_mib":max(rss_samples),
+    }
+
+def force_mtime_change(path,sequence):
+    """Make modified-mode tests deterministic even on coarse timestamp filesystems."""
+    base=int(time.time()) + 10 + sequence
+    os.utime(path, (base,base))
+
+def nift_incremental_benchmark(cwd,nift,warmups,repetitions):
+    """Measure Nift's development-loop behavior on the already-built 10k fixture."""
+    results={}
+    cmd=[nift,"build-updated"]
+
+    def measure_case(name,mutate=None):
+        time_samples=[]
+        rss_samples=[]
+        total=warmups+repetitions
+        for i in range(total):
+            if mutate is not None:
+                mutate(i)
+            label=(f"warmup {i+1}/{warmups}" if i < warmups
+                   else f"measured run {i-warmups+1}/{repetitions}")
+            print(f"[Nift incremental: {name}] {label}", file=sys.stderr, flush=True)
+            elapsed,peak_rss_kib=run(cmd,cwd)
+            peak_rss_mib=peak_rss_kib/1024.0
+            print(
+                f"[Nift incremental: {name}] {label} finished in {elapsed:.3f}s; "
+                f"peak aggregate RSS {peak_rss_mib:.1f} MiB",
+                file=sys.stderr,
+                flush=True,
+            )
+            if i >= warmups:
+                time_samples.append(elapsed)
+                rss_samples.append(peak_rss_mib)
+        results[name]=sample_summary(time_samples,rss_samples)
+
+    # Baseline must be fully up to date before incremental measurements begin.
+    print("[Nift incremental] preparing fully built baseline", file=sys.stderr, flush=True)
+    elapsed,_=run([nift,"build-all"],cwd)
+    print(f"[Nift incremental] baseline ready in {elapsed:.3f}s", file=sys.stderr, flush=True)
+
+    measure_case("no_op")
+
+    leaf=cwd/"content/page-1.html"
+    original_leaf=leaf.read_text()
+    def mutate_leaf(i):
+        leaf.write_text(
+            f"<h1>Page 1</h1><p>Equivalent benchmark content.</p>"
+            f"<!-- incremental-leaf-{i} -->"
+        )
+        force_mtime_change(leaf,i)
+    measure_case("one_page_changed",mutate_leaf)
+    leaf.write_text(original_leaf)
+    force_mtime_change(leaf,1000)
+    run(cmd,cwd)
+
+    template=cwd/"templates/template.html"
+    original_template=template.read_text()
+    def mutate_template(i):
+        template.write_text(
+            original_template + f"<!-- shared-template-change-{i} -->"
+        )
+        force_mtime_change(template,2000+i)
+    measure_case("shared_template_changed",mutate_template)
+    template.write_text(original_template)
+    force_mtime_change(template,4000)
+    run(cmd,cwd)
+
+    return results
+
 def machine_info():
     info={
         "system":platform.system(),"release":platform.release(),"machine":platform.machine(),
@@ -218,19 +297,18 @@ def main():
                 if i>=a.warmups:
                     time_samples.append(elapsed)
                     rss_samples.append(peak_rss_mib)
-            results[name]={
-                "seconds":time_samples,
-                "median_seconds":statistics.median(time_samples),
-                "min_seconds":min(time_samples),
-                "max_seconds":max(time_samples),
-                "peak_rss_mib":rss_samples,
-                "median_peak_rss_mib":statistics.median(rss_samples),
-                "min_peak_rss_mib":min(rss_samples),
-                "max_peak_rss_mib":max(rss_samples),
-            }
+            results[name]=sample_summary(time_samples,rss_samples)
+
+        print("[Nift incremental] starting development-loop measurements", file=sys.stderr, flush=True)
+        nift_incremental=nift_incremental_benchmark(
+            fixtures["Nift"][0],
+            nift,
+            a.warmups,
+            a.repetitions,
+        )
 
     out={
-        "schema":3,
+        "schema":4,
         "workload":"clean production build",
         "pages":a.pages,
         "fixture_note":"Equivalent small pages generated from tool-native source; dependency installation and fixture generation are outside timed runs.",
@@ -240,6 +318,16 @@ def main():
         "machine":machine_info(),
         "tools":tools,
         "results":results,
+        "nift_incremental": {
+            "note": "Nift-only development-loop measurements on the same 10,000-page fixture; not cross-generator comparisons.",
+            "command": "nift build-updated",
+            "cases": {
+                "no_op": "No source or template changed.",
+                "one_page_changed": "One independent content page changed before each run.",
+                "shared_template_changed": "The common template changed before each run, legitimately invalidating all 10,000 pages."
+            },
+            "results": nift_incremental,
+        },
     }
     dest=Path(a.output); dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text(json.dumps(out,indent=2)+"\n")

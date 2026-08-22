@@ -52,3 +52,17 @@ The current retained run is published at https://nift.dev/website-generator-benc
 RAM is measured on Linux as **peak aggregate RSS across the spawned process group**, sampled every 10 ms while the build runs. This deliberately includes child processes used by Node-based generators instead of reporting only the parent CLI process.
 
 Because the memory sampler runs during the same build, the retained timing and RAM samples describe the same measured repetitions. The harness currently refuses RAM benchmarking on non-Linux hosts rather than silently switching to a non-equivalent metric.
+
+## Nift incremental measurements
+
+The same run also records a separate **Nift-only development-loop benchmark** on the 10,000-page fixture. These numbers are intentionally not presented as cross-generator comparisons.
+
+Three `nift build-updated` cases are retained with the same wall-clock + peak aggregate RSS measurements:
+
+1. **No-op** — nothing changed.
+2. **One page changed** — one independent content page is changed before each run.
+3. **Shared template changed** — the common template is changed before each run, so all 10,000 outputs legitimately need rebuilding.
+
+The one-page and shared-template cases mutate the fixture before every warmup/measured run and force a distinct filesystem timestamp so the modified-mode dependency check is deterministic even on filesystems with coarse timestamp resolution.
+
+The resulting JSON uses schema 4 and stores these separately under `nift_incremental`. They should be interpreted as Nift iteration evidence, not compared directly with the clean production-build timings of Hugo, Astro or VitePress.
