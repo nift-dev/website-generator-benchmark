@@ -25,7 +25,7 @@ That downloads the pinned Hugo binary for the current Linux/macOS host and insta
 From this repository, with a built Nift binary:
 
 ```sh
-python3 scripts/benchmark.py \
+python3 -u scripts/benchmark.py \
   --nift /path/to/nift \
   --hugo .benchmark-tools/hugo \
   --node-project . \
@@ -36,6 +36,8 @@ python3 scripts/benchmark.py \
 ```
 
 Raw results belong in `evidence/results.json` and should be committed alongside the website revision that interprets them.
+
+Progress is printed live to stderr before and after every warmup/measured run, so a long generator cannot look like a hung process.
 
 ## Evidence rule
 

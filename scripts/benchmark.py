@@ -5,7 +5,7 @@ Fixture generation and dependency installation are outside the timed region.
 Every requested tool must exist and every run must succeed before results are
 written. This prevents partial comparisons from being mistaken for evidence.
 """
-import argparse, json, os, platform, shutil, statistics, subprocess, tempfile, time
+import argparse, json, os, platform, shutil, statistics, subprocess, sys, tempfile, time
 from pathlib import Path
 
 def run(cmd,cwd,env=None):
@@ -123,10 +123,10 @@ def main():
                     label=f"warmup {i+1}/{a.warmups}"
                 else:
                     label=f"measured run {i-a.warmups+1}/{a.repetitions}"
-                print(f"[{name}] {label}", flush=True)
+                print(f"[{name}] {label}", file=sys.stderr, flush=True)
                 clean_outputs(cwd,outputs)
                 elapsed=run(cmd,cwd)
-                print(f"[{name}] {label} finished in {elapsed:.3f}s", flush=True)
+                print(f"[{name}] {label} finished in {elapsed:.3f}s", file=sys.stderr, flush=True)
                 if i>=a.warmups: samples.append(elapsed)
             results[name]={
                 "seconds":samples,
