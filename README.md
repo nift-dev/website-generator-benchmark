@@ -66,3 +66,14 @@ Three `nift build-updated` cases are retained with the same wall-clock + peak ag
 The one-page and shared-template cases mutate the fixture before every warmup/measured run and force a distinct filesystem timestamp so the modified-mode dependency check is deterministic even on filesystems with coarse timestamp resolution.
 
 The resulting JSON uses schema 4 and stores these separately under `nift_incremental`. They should be interpreted as Nift iteration evidence, not compared directly with the clean production-build timings of Hugo, Astro or VitePress.
+
+## Current retained result
+
+The schema-4 run in `evidence/results.json` records, for 10,000-page clean builds:
+
+- Nift: 0.165 s median, 10.0 MiB median peak aggregate RSS
+- Hugo: 0.467 s, 237 MiB
+- VitePress: 58.49 s, 3,687 MiB
+- Astro: 124.79 s, 3,218 MiB
+
+The same run records Nift `build-updated` medians of 0.100 s (no-op), 0.119 s (one page changed), and 0.176 s (shared template invalidating all 10,000 pages), with median peak RAM between 9.6 and 11.3 MiB.

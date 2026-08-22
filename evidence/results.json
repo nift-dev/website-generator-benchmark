@@ -1,8 +1,9 @@
 {
-  "schema": 2,
+  "schema": 4,
   "workload": "clean production build",
   "pages": 10000,
   "fixture_note": "Equivalent small pages generated from tool-native source; dependency installation and fixture generation are outside timed runs.",
+  "memory_measurement": "Linux peak aggregate RSS across the spawned process group, sampled every 10 ms during each build.",
   "warmups": 1,
   "repetitions": 3,
   "machine": {
@@ -23,43 +24,140 @@
   "results": {
     "Nift": {
       "seconds": [
-        0.14348647400038317,
-        0.14123210500110872,
-        0.14254764300130773
+        0.1673569989943644,
+        0.16510669198760297,
+        0.16476935999526177
       ],
-      "median_seconds": 0.14254764300130773,
-      "min_seconds": 0.14123210500110872,
-      "max_seconds": 0.14348647400038317
+      "median_seconds": 0.16510669198760297,
+      "min_seconds": 0.16476935999526177,
+      "max_seconds": 0.1673569989943644,
+      "peak_rss_mib": [
+        9.9765625,
+        10.015625,
+        9.96484375
+      ],
+      "median_peak_rss_mib": 9.9765625,
+      "min_peak_rss_mib": 9.96484375,
+      "max_peak_rss_mib": 10.015625
     },
     "Hugo": {
       "seconds": [
-        0.4339081179932691,
-        0.43386189598822966,
-        0.4466778400092153
+        0.466992396992282,
+        0.4673372720135376,
+        0.47461903700605035
       ],
-      "median_seconds": 0.4339081179932691,
-      "min_seconds": 0.43386189598822966,
-      "max_seconds": 0.4466778400092153
+      "median_seconds": 0.4673372720135376,
+      "min_seconds": 0.466992396992282,
+      "max_seconds": 0.47461903700605035,
+      "peak_rss_mib": [
+        252.13671875,
+        237.17578125,
+        233.1484375
+      ],
+      "median_peak_rss_mib": 237.17578125,
+      "min_peak_rss_mib": 233.1484375,
+      "max_peak_rss_mib": 252.13671875
     },
     "Astro": {
       "seconds": [
-        121.04697784899327,
-        119.12462295799924,
-        121.44105392899655
+        124.69682580399967,
+        124.79006726101215,
+        127.0193500299938
       ],
-      "median_seconds": 121.04697784899327,
-      "min_seconds": 119.12462295799924,
-      "max_seconds": 121.44105392899655
+      "median_seconds": 124.79006726101215,
+      "min_seconds": 124.69682580399967,
+      "max_seconds": 127.0193500299938,
+      "peak_rss_mib": [
+        3217.5078125,
+        3187.77734375,
+        3283.3984375
+      ],
+      "median_peak_rss_mib": 3217.5078125,
+      "min_peak_rss_mib": 3187.77734375,
+      "max_peak_rss_mib": 3283.3984375
     },
     "VitePress": {
       "seconds": [
-        56.719792203002726,
-        57.01047090798966,
-        56.78351858400856
+        58.18321518601442,
+        58.49092314898735,
+        58.72016827399784
       ],
-      "median_seconds": 56.78351858400856,
-      "min_seconds": 56.719792203002726,
-      "max_seconds": 57.01047090798966
+      "median_seconds": 58.49092314898735,
+      "min_seconds": 58.18321518601442,
+      "max_seconds": 58.72016827399784,
+      "peak_rss_mib": [
+        3973.34765625,
+        3686.65234375,
+        3666.296875
+      ],
+      "median_peak_rss_mib": 3686.65234375,
+      "min_peak_rss_mib": 3666.296875,
+      "max_peak_rss_mib": 3973.34765625
+    }
+  },
+  "nift_incremental": {
+    "note": "Nift-only development-loop measurements on the same 10,000-page fixture; not cross-generator comparisons.",
+    "command": "nift build-updated",
+    "cases": {
+      "no_op": "No source or template changed.",
+      "one_page_changed": "One independent content page changed before each run.",
+      "shared_template_changed": "The common template changed before each run, legitimately invalidating all 10,000 pages."
+    },
+    "results": {
+      "no_op": {
+        "seconds": [
+          0.09932847200252581,
+          0.10000857099657878,
+          0.1029232690052595
+        ],
+        "median_seconds": 0.10000857099657878,
+        "min_seconds": 0.09932847200252581,
+        "max_seconds": 0.1029232690052595,
+        "peak_rss_mib": [
+          9.6328125,
+          9.640625,
+          9.62890625
+        ],
+        "median_peak_rss_mib": 9.6328125,
+        "min_peak_rss_mib": 9.62890625,
+        "max_peak_rss_mib": 9.640625
+      },
+      "one_page_changed": {
+        "seconds": [
+          0.1221004919934785,
+          0.10068385899649002,
+          0.1194376560015371
+        ],
+        "median_seconds": 0.1194376560015371,
+        "min_seconds": 0.10068385899649002,
+        "max_seconds": 0.1221004919934785,
+        "peak_rss_mib": [
+          9.73046875,
+          9.71875,
+          9.69140625
+        ],
+        "median_peak_rss_mib": 9.71875,
+        "min_peak_rss_mib": 9.69140625,
+        "max_peak_rss_mib": 9.73046875
+      },
+      "shared_template_changed": {
+        "seconds": [
+          0.1757728430093266,
+          0.16968354600248858,
+          0.18692725499568041
+        ],
+        "median_seconds": 0.1757728430093266,
+        "min_seconds": 0.16968354600248858,
+        "max_seconds": 0.18692725499568041,
+        "peak_rss_mib": [
+          11.34765625,
+          11.33203125,
+          11.328125
+        ],
+        "median_peak_rss_mib": 11.33203125,
+        "min_peak_rss_mib": 11.328125,
+        "max_peak_rss_mib": 11.34765625
+      }
     }
   }
 }

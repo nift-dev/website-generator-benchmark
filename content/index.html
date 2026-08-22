@@ -1,62 +1,146 @@
 <main class="shell">
 <header class="hero">
   <p class="eyebrow">Nift benchmark evidence</p>
-  <h1>Measure first.<br><em>Interpret second.</em></h1>
-  <p class="lead">A reproducible clean-build comparison of four website generators on the same 10,000-page workload. The raw samples, exact versions, machine details and harness are published alongside the conclusions.</p>
-  <div class="hero-actions">
-    <a class="button primary" href="#results">See results</a>
-    <a class="button" href="@pathto('public/evidence/results.json')">Raw JSON</a>
-  </div>
+  <h1>Fast builds.<br><em>Small footprint.</em></h1>
+  <p class="lead">A reproducible 10,000-page clean-build comparison of Nift, Hugo, VitePress and Astro, measuring both wall-clock time and peak aggregate process-tree RSS. The same run also measures Nift's incremental development loop.</p>
+  <div class="hero-actions"><a class="button primary" href="#clean-build">See results</a><a class="button" href="@pathto('public/evidence/results.json')">Raw JSON</a></div>
 </header>
 
-<section class="rerun-note">
-  <p class="eyebrow">RAM measurement added</p>
-  <h2>One fresh run required.</h2>
-  <p>The benchmark harness now records peak aggregate process-tree RSS alongside elapsed time and also measures Nift's no-op, one-page and shared-template incremental build loop on the same 10,000-page fixture. The currently published timing-only result remains useful, but the site will be updated with combined clean-build, RAM and Nift iteration evidence after the new run is supplied.</p>
+<section id="clean-build">
+  <p class="eyebrow">Clean production build</p>
+  <h2>10,000 pages from clean output.</h2>
+  <p>Median of three measured runs after one warmup. Dependency installation and fixture generation were outside the timed region. Peak RAM is aggregate RSS across the spawned process group, sampled every 10 ms on Linux.</p>
+  <div class="result-grid"><article class="result-card winner">
+<span>Nift</span><strong>0.165 s</strong>
+<small>10.0 MiB peak RAM</small>
+<small>baseline</small>
+</article><article class="result-card">
+<span>Hugo</span><strong>0.467 s</strong>
+<small>237 MiB peak RAM</small>
+<small>2.83× time · 23.8× RAM</small>
+</article><article class="result-card">
+<span>VitePress</span><strong>58.49 s</strong>
+<small>3,687 MiB peak RAM</small>
+<small>354.26× time · 369.5× RAM</small>
+</article><article class="result-card">
+<span>Astro</span><strong>124.79 s</strong>
+<small>3,218 MiB peak RAM</small>
+<small>755.81× time · 322.5× RAM</small>
+</article></div>
+
+  <div class="chart-grid">
+    <figure class="benchmark-graph">
+      <figcaption><strong>Clean-build time</strong><span>Median · logarithmic scale</span></figcaption>
+      <div class="graph-axis"><span>0.1 s</span><span>1 s</span><span>10 s</span><span>100 s+</span></div>
+      <div class="graph-row">
+  <div class="graph-label"><strong>Nift</strong><span>0.165 s</span></div>
+  <div class="graph-track"><i class="graph-bar winner" style="--bar:6.86%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>Hugo</strong><span>0.467 s</span></div>
+  <div class="graph-track"><i class="graph-bar" style="--bar:21.08%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>VitePress</strong><span>58.49 s</span></div>
+  <div class="graph-track"><i class="graph-bar" style="--bar:87.12%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>Astro</strong><span>124.79 s</span></div>
+  <div class="graph-track"><i class="graph-bar" style="--bar:97.48%"></i></div>
+</div>
+    </figure>
+    <figure class="benchmark-graph">
+      <figcaption><strong>Peak RAM</strong><span>Median aggregate RSS · logarithmic scale</span></figcaption>
+      <div class="graph-axis"><span>10 MiB</span><span>100 MiB</span><span>1 GiB</span><span>4 GiB</span></div>
+      <div class="graph-row">
+  <div class="graph-label"><strong>Nift</strong><span>10.0 MiB</span></div>
+  <div class="graph-track"><i class="graph-bar winner" style="--bar:3.43%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>Hugo</strong><span>237 MiB</span></div>
+  <div class="graph-track"><i class="graph-bar" style="--bar:52.65%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>VitePress</strong><span>3,687 MiB</span></div>
+  <div class="graph-track"><i class="graph-bar" style="--bar:95.27%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>Astro</strong><span>3,218 MiB</span></div>
+  <div class="graph-track"><i class="graph-bar" style="--bar:93.15%"></i></div>
+</div>
+    </figure>
+  </div>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Generator</th><th>Median time</th><th>Median peak RAM</th><th>Time vs Nift</th><th>RAM vs Nift</th></tr></thead>
+    <tbody><tr><td><strong>Nift</strong></td><td>0.165 s</td><td>10.0 MiB</td><td>1×</td><td>1×</td></tr><tr><td><strong>Hugo</strong></td><td>0.467 s</td><td>237 MiB</td><td>2.83× slower</td><td>23.8× RAM</td></tr><tr><td><strong>VitePress</strong></td><td>58.49 s</td><td>3,687 MiB</td><td>354.26× slower</td><td>369.5× RAM</td></tr><tr><td><strong>Astro</strong></td><td>124.79 s</td><td>3,218 MiB</td><td>755.81× slower</td><td>322.5× RAM</td></tr></tbody>
+  </table></div>
+  <div class="callout"><strong>Scope matters.</strong><p>The charts use logarithmic scales because the differences span several orders of magnitude. These ratios describe this exact 10,000-page clean-build fixture on this machine; they are not universal claims about every workload or each framework's intended dev-server/HMR experience.</p></div>
 </section>
 
-<section id="results">
-  <p class="eyebrow">Measured result</p>
-  <h2>10,000-page clean production build</h2>
-  <p>Median of three measured runs after one warmup. Fixture generation and dependency installation were outside the timed region. Each measured run removed generated output and relevant build caches first.</p>
-  <div class="result-grid">
-    <article class="result-card winner"><span>Nift</span><strong>0.143 s</strong><small>baseline · 1×</small></article>
-    <article class="result-card"><span>Hugo</span><strong>0.434 s</strong><small>3.04× slower</small></article>
-    <article class="result-card"><span>VitePress</span><strong>56.78 s</strong><small>398× slower</small></article>
-    <article class="result-card"><span>Astro</span><strong>121.05 s</strong><small>849× slower</small></article>
+<section id="iteration">
+  <p class="eyebrow">Nift during iteration</p>
+  <h2>The build tool stays small in the edit → verify loop.</h2>
+  <p>These are Nift-only <code>build-updated</code> measurements on the same 10,000-page fixture. They are intentionally separate from the cross-generator clean-build comparison.</p>
+  <div class="incremental-cards"><article><span>No-op</span><strong>0.100 s</strong><small>9.6 MiB peak RAM</small></article><article><span>One page changed</span><strong>0.119 s</strong><small>9.7 MiB peak RAM</small></article><article><span>Shared template changed</span><strong>0.176 s</strong><small>11.3 MiB peak RAM</small></article></div>
+  <div class="chart-grid">
+    <figure class="benchmark-graph">
+      <figcaption><strong>Incremental build time</strong><span>Median · linear scale to 0.2 s</span></figcaption>
+      <div class="graph-axis"><span>0</span><span>0.05 s</span><span>0.10 s</span><span>0.20 s</span></div>
+      <div class="graph-row">
+  <div class="graph-label"><strong>No-op</strong><span>0.100 s</span></div>
+  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:50.00%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>One page changed</strong><span>0.119 s</span></div>
+  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:59.72%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>Shared template changed</strong><span>0.176 s</span></div>
+  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:87.89%"></i></div>
+</div>
+    </figure>
+    <figure class="benchmark-graph">
+      <figcaption><strong>Incremental peak RAM</strong><span>Median aggregate RSS · linear scale to 12 MiB</span></figcaption>
+      <div class="graph-axis"><span>0</span><span>4 MiB</span><span>8 MiB</span><span>12 MiB</span></div>
+      <div class="graph-row">
+  <div class="graph-label"><strong>No-op</strong><span>9.6 MiB</span></div>
+  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:80.27%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>One page changed</strong><span>9.7 MiB</span></div>
+  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:80.99%"></i></div>
+</div>
+<div class="graph-row">
+  <div class="graph-label"><strong>Shared template changed</strong><span>11.3 MiB</span></div>
+  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:94.43%"></i></div>
+</div>
+    </figure>
   </div>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Generator</th><th>Median</th><th>Relative to Nift</th><th>Measured range</th></tr></thead>
-    <tbody><tr><td><strong>Nift</strong></td><td>0.143 s</td><td>1×</td><td>0.141 s–0.143 s</td></tr><tr><td><strong>Hugo</strong></td><td>0.434 s</td><td>3.04× slower</td><td>0.434 s–0.447 s</td></tr><tr><td><strong>VitePress</strong></td><td>56.78 s</td><td>398× slower</td><td>56.72 s–57.01 s</td></tr><tr><td><strong>Astro</strong></td><td>121.05 s</td><td>849× slower</td><td>119.12 s–121.44 s</td></tr></tbody>
-  </table></div>
-  <div class="callout"><strong>Scope matters.</strong><p>These ratios describe this exact 10,000-page clean-build fixture on this machine. They do not mean Nift is universally 849× faster than Astro, or that clean production builds represent each tool's normal development loop.</p></div>
+  <p>For a human, that means builds return quickly while the editor, browser and local services remain the things consuming the machine. For an agent, it means repeated edit/build/verify cycles can invoke the build system frequently without adding a large latency or memory tax.</p>
 </section>
 
 <section>
-  <p class="eyebrow">Raw timings</p>
-  <h2>The result is not a single lucky run.</h2>
-  <p>All retained measured samples are shown below in seconds. The spreads are small relative to the differences between tools.</p>
-  <div class="samples"><article class="sample-card"><div><strong>Nift</strong><span>0.143 s median</span></div><code>0.143486 · 0.141232 · 0.142548</code></article><article class="sample-card"><div><strong>Hugo</strong><span>0.434 s median</span></div><code>0.433908 · 0.433862 · 0.446678</code></article><article class="sample-card"><div><strong>VitePress</strong><span>56.78 s median</span></div><code>56.719792 · 57.010471 · 56.783519</code></article><article class="sample-card"><div><strong>Astro</strong><span>121.05 s median</span></div><code>121.046978 · 119.124623 · 121.441054</code></article></div>
-  <p class="quiet">The exact machine-readable evidence is available as <a href="@pathto('public/evidence/results.json')">results.json</a>.</p>
+  <p class="eyebrow">Raw samples</p>
+  <h2>The medians are backed by the measured runs.</h2>
+  <div class="samples"><article class="sample-card"><div><strong>Nift</strong><span>0.165 s · 10.0 MiB</span></div><code>time: 0.167357 · 0.165107 · 0.164769<br>RAM: 10.0 · 10.0 · 10.0 MiB</code></article><article class="sample-card"><div><strong>Hugo</strong><span>0.467 s · 237 MiB</span></div><code>time: 0.466992 · 0.467337 · 0.474619<br>RAM: 252.1 · 237.2 · 233.1 MiB</code></article><article class="sample-card"><div><strong>VitePress</strong><span>58.49 s · 3,687 MiB</span></div><code>time: 58.183215 · 58.490923 · 58.720168<br>RAM: 3973.3 · 3686.7 · 3666.3 MiB</code></article><article class="sample-card"><div><strong>Astro</strong><span>124.79 s · 3,218 MiB</span></div><code>time: 124.696826 · 124.790067 · 127.019350<br>RAM: 3217.5 · 3187.8 · 3283.4 MiB</code></article></div>
+  <p class="quiet">The exact schema-4 evidence—including all clean-build and Nift incremental samples—is available as <a href="@pathto('public/evidence/results.json')">results.json</a>.</p>
 </section>
 
 <section class="method-grid">
   <div>
-    <p class="eyebrow">Methodology</p>
-    <h2>Equivalent small pages, tool-native fixtures.</h2>
+    <p class="eyebrow">Methodology</p><h2>Equivalent small pages, tool-native fixtures.</h2>
     <p>Equivalent small pages generated from tool-native source; dependency installation and fixture generation are outside timed runs.</p>
     <ul>
-      <li><strong>10,000 pages</strong> per fixture.</li>
-      <li><strong>1 warmup</strong> before timing.</li>
-      <li><strong>3 measured clean builds</strong> retained per generator.</li>
-      <li>Generated output and relevant build caches removed between measured builds.</li>
-      <li>Dependency installation and fixture generation excluded from the timed region.</li>
-      <li>The harness refuses to write partial comparison evidence when a requested tool is missing or fails.</li>
+      <li><strong>10,000 pages</strong> per clean-build fixture.</li>
+      <li><strong>1 warmup + 3 measured runs</strong> per case.</li>
+      <li>Generated output and relevant build caches removed between clean builds.</li>
+      <li>Peak aggregate RSS sampled every 10 ms across each spawned process group.</li>
+      <li>Nift incremental cases: no change, one independent page changed, and shared template changed.</li>
+      <li>The harness refuses partial comparison evidence if a requested tool is missing or fails.</li>
     </ul>
   </div>
-  <div class="machine">
-    <p class="eyebrow">Machine</p>
-    <h2>Environment recorded with the run.</h2>
+  <div class="machine"><p class="eyebrow">Machine</p><h2>Environment recorded with the run.</h2>
     <dl>
       <div><dt>OS</dt><dd>Linux 7.0.0-29-generic</dd></div>
       <div><dt>Architecture</dt><dd>x86_64</dd></div>
@@ -68,8 +152,7 @@
 </section>
 
 <section>
-  <p class="eyebrow">Exact tools</p>
-  <h2>Versions are part of the evidence.</h2>
+  <p class="eyebrow">Exact tools</p><h2>Versions are part of the evidence.</h2>
   <div class="versions">
     <div><strong>Nift</strong><code>Nift v4.0.7</code></div>
     <div><strong>Hugo</strong><code>hugo v0.164.0-ce2470e7012b5ab5fc4e10ebe4027e9f8d9e00dc linux/amd64 BuildDate=2026-07-06T16:39:30Z VendorInfo=gohugoio</code></div>
@@ -79,9 +162,7 @@
 </section>
 
 <section>
-  <p class="eyebrow">Reproduce it</p>
-  <h2>Run the same harness yourself.</h2>
-  <p>The benchmark repository contains the fixture generator and pinned competitor setup. On a Linux/macOS machine with a built Nift binary:</p>
+  <p class="eyebrow">Reproduce it</p><h2>Run the same harness yourself.</h2>
   <pre><code>./scripts/setup-tools.sh
 
 python3 -u scripts/benchmark.py \
@@ -92,16 +173,15 @@ python3 -u scripts/benchmark.py \
   --warmups 1 \
   --repetitions 3 \
   --output evidence/results.json</code></pre>
-  <p>The benchmark is intentionally reproducible rather than instant: Astro and VitePress take substantially longer than Nift/Hugo on this workload.</p>
+  <p>The run takes several minutes because Astro and VitePress are substantially slower on this fixture. Progress is printed before and after every phase and repetition.</p>
 </section>
 
 <section>
-  <p class="eyebrow">Interpretation</p>
-  <h2>What this does—and does not—show.</h2>
+  <p class="eyebrow">Interpretation</p><h2>What this does—and does not—show.</h2>
   <div class="interpret-grid">
-    <article><strong>It does show</strong><p>On this deterministic 10,000-page clean-build fixture, Nift had the lowest measured median by a large margin.</p></article>
-    <article><strong>It does not show</strong><p>That Nift is universally faster on every workload, or that clean builds are equivalent to each framework's intended dev-server/HMR experience.</p></article>
-    <article><strong>Why publish it</strong><p>The differences are large enough to invite skepticism. Publishing the harness and raw samples makes that skepticism testable.</p></article>
+    <article><strong>It does show</strong><p>Nift was extremely quick and had a very low memory footprint on this 10,000-page clean-build workload, and remained around 10–11 MiB during the measured incremental cases.</p></article>
+    <article><strong>It does not show</strong><p>That these ratios hold for every project, or that a clean production build is equivalent to the dev-server/HMR workflow of Astro or VitePress.</p></article>
+    <article><strong>Why it matters</strong><p>Low build latency and low memory overhead leave more machine capacity for editors, browsers, local services and repeated human or agent verification loops.</p></article>
   </div>
 </section>
 </main>
