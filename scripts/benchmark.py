@@ -102,8 +102,8 @@ def main():
     ap.add_argument("--hugo",required=True)
     ap.add_argument("--node-project",required=True,help="Project containing pinned Astro/VitePress node_modules")
     ap.add_argument("--pages",type=int,default=10000)
-    ap.add_argument("--repetitions",type=int,default=7)
-    ap.add_argument("--warmups",type=int,default=2)
+    ap.add_argument("--repetitions",type=int,default=3)
+    ap.add_argument("--warmups",type=int,default=1)
     ap.add_argument("--output",default="evidence/results.json")
     a=ap.parse_args()
 

@@ -2,7 +2,7 @@
 
 A standalone, evidence-first benchmark site for Nift comparisons.
 
-The primary workload is a **10,000-page clean production build** using pinned Nift, Hugo, Astro and VitePress versions. Fixture generation and dependency installation are outside timed runs. The harness performs warmups followed by repeated measured builds and refuses to write a partial comparison.
+The primary workload is a **10,000-page clean production build** using Nift, Hugo, Astro and VitePress. Fixture generation and dependency installation are outside timed runs. The harness performs warmups followed by repeated measured builds and refuses to write a partial comparison.
 
 ## Pinned competitors
 
@@ -30,8 +30,8 @@ python3 -u scripts/benchmark.py \
   --hugo .benchmark-tools/hugo \
   --node-project . \
   --pages 10000 \
-  --warmups 2 \
-  --repetitions 7 \
+  --warmups 1 \
+  --repetitions 3 \
   --output evidence/results.json
 ```
 
@@ -42,3 +42,7 @@ Progress is printed live to stderr from startup onward: dependency checks, versi
 ## Evidence rule
 
 Do not publish a comparative result unless all requested tools complete the same retained run. Do not substitute historical numbers for a failed or incomplete run.
+
+## Published evidence
+
+The current retained run is published at https://nift.dev/website-generator-benchmark/ and its raw JSON is retained verbatim as `evidence/results.json` and published byte-for-byte as `public/evidence/results.json`.

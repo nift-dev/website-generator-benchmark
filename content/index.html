@@ -1,3 +1,101 @@
-<main class="shell"><p class="eyebrow">Nift benchmark evidence</p><h1>Measure first.<br>Interpret second.</h1><p class="lead">A standalone home for reproducible website-generator benchmarks. The harness, fixtures, pinned tool versions, raw samples and limitations live beside the conclusions.</p><section><h2>No comparative result is published yet.</h2><p>The reproducible harness now covers Nift, Hugo, Astro and VitePress. This execution environment cannot resolve GitHub or npm package hosts, so it cannot fetch the pinned competitors. Rather than mix historical numbers with a new methodology, this site remains unpublished until one complete retained run succeeds.</p></section><section><h2>First workload</h2><div class="grid"><article><strong>10,000</strong><span>generated pages</span></article><article><strong>2 + 7</strong><span>warmups + measured runs</span></article><article><strong>4</strong><span>Nift · Hugo · Astro · VitePress</span></article></div><p>Each tool produces equivalent small pages from tool-native source. Timed runs are clean production builds with generated output and build caches removed before every repetition. Dependency installation and fixture generation happen outside the timed region.</p></section><section><h2>Pinned competitors</h2><pre><code>Hugo       0.164.0
-Astro      7.2.4
-VitePress  1.6.4</code></pre><p>Nift is supplied as an explicit binary so the retained result records exactly which released/development build was measured.</p></section><section><h2>Publication rule</h2><p>No “fastest” claim is allowed beyond the exact workload measured. Raw samples, versions, machine details and commands must be committed before results are presented here. The runner reports dependency checks, fixture generation, and every warmup/measured repetition live while it works.</p></section></main>
+<main class="shell">
+<header class="hero">
+  <p class="eyebrow">Nift benchmark evidence</p>
+  <h1>Measure first.<br><em>Interpret second.</em></h1>
+  <p class="lead">A reproducible clean-build comparison of four website generators on the same 10,000-page workload. The raw samples, exact versions, machine details and harness are published alongside the conclusions.</p>
+  <div class="hero-actions">
+    <a class="button primary" href="#results">See results</a>
+    <a class="button" href="@pathto('public/evidence/results.json')">Raw JSON</a>
+  </div>
+</header>
+
+<section id="results">
+  <p class="eyebrow">Measured result</p>
+  <h2>10,000-page clean production build</h2>
+  <p>Median of three measured runs after one warmup. Fixture generation and dependency installation were outside the timed region. Each measured run removed generated output and relevant build caches first.</p>
+  <div class="result-grid">
+    <article class="result-card winner"><span>Nift</span><strong>0.143 s</strong><small>baseline · 1×</small></article>
+    <article class="result-card"><span>Hugo</span><strong>0.434 s</strong><small>3.04× slower</small></article>
+    <article class="result-card"><span>VitePress</span><strong>56.78 s</strong><small>398× slower</small></article>
+    <article class="result-card"><span>Astro</span><strong>121.05 s</strong><small>849× slower</small></article>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Generator</th><th>Median</th><th>Relative to Nift</th><th>Measured range</th></tr></thead>
+    <tbody><tr><td><strong>Nift</strong></td><td>0.143 s</td><td>1×</td><td>0.141 s–0.143 s</td></tr><tr><td><strong>Hugo</strong></td><td>0.434 s</td><td>3.04× slower</td><td>0.434 s–0.447 s</td></tr><tr><td><strong>VitePress</strong></td><td>56.78 s</td><td>398× slower</td><td>56.72 s–57.01 s</td></tr><tr><td><strong>Astro</strong></td><td>121.05 s</td><td>849× slower</td><td>119.12 s–121.44 s</td></tr></tbody>
+  </table></div>
+  <div class="callout"><strong>Scope matters.</strong><p>These ratios describe this exact 10,000-page clean-build fixture on this machine. They do not mean Nift is universally 849× faster than Astro, or that clean production builds represent each tool's normal development loop.</p></div>
+</section>
+
+<section>
+  <p class="eyebrow">Raw timings</p>
+  <h2>The result is not a single lucky run.</h2>
+  <p>All retained measured samples are shown below in seconds. The spreads are small relative to the differences between tools.</p>
+  <div class="samples"><article class="sample-card"><div><strong>Nift</strong><span>0.143 s median</span></div><code>0.143486 · 0.141232 · 0.142548</code></article><article class="sample-card"><div><strong>Hugo</strong><span>0.434 s median</span></div><code>0.433908 · 0.433862 · 0.446678</code></article><article class="sample-card"><div><strong>VitePress</strong><span>56.78 s median</span></div><code>56.719792 · 57.010471 · 56.783519</code></article><article class="sample-card"><div><strong>Astro</strong><span>121.05 s median</span></div><code>121.046978 · 119.124623 · 121.441054</code></article></div>
+  <p class="quiet">The exact machine-readable evidence is available as <a href="@pathto('public/evidence/results.json')">results.json</a>.</p>
+</section>
+
+<section class="method-grid">
+  <div>
+    <p class="eyebrow">Methodology</p>
+    <h2>Equivalent small pages, tool-native fixtures.</h2>
+    <p>Equivalent small pages generated from tool-native source; dependency installation and fixture generation are outside timed runs.</p>
+    <ul>
+      <li><strong>10,000 pages</strong> per fixture.</li>
+      <li><strong>1 warmup</strong> before timing.</li>
+      <li><strong>3 measured clean builds</strong> retained per generator.</li>
+      <li>Generated output and relevant build caches removed between measured builds.</li>
+      <li>Dependency installation and fixture generation excluded from the timed region.</li>
+      <li>The harness refuses to write partial comparison evidence when a requested tool is missing or fails.</li>
+    </ul>
+  </div>
+  <div class="machine">
+    <p class="eyebrow">Machine</p>
+    <h2>Environment recorded with the run.</h2>
+    <dl>
+      <div><dt>OS</dt><dd>Linux 7.0.0-29-generic</dd></div>
+      <div><dt>Architecture</dt><dd>x86_64</dd></div>
+      <div><dt>Logical CPUs</dt><dd>20</dd></div>
+      <div><dt>Python</dt><dd>3.14.4</dd></div>
+      <div><dt>Node</dt><dd>v22.22.1</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Exact tools</p>
+  <h2>Versions are part of the evidence.</h2>
+  <div class="versions">
+    <div><strong>Nift</strong><code>Nift v4.0.7</code></div>
+    <div><strong>Hugo</strong><code>hugo v0.164.0-ce2470e7012b5ab5fc4e10ebe4027e9f8d9e00dc linux/amd64 BuildDate=2026-07-06T16:39:30Z VendorInfo=gohugoio</code></div>
+    <div><strong>Astro</strong><code>Astro 7.2.4</code></div>
+    <div><strong>VitePress</strong><code>VitePress 1.6.4</code></div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Reproduce it</p>
+  <h2>Run the same harness yourself.</h2>
+  <p>The benchmark repository contains the fixture generator and pinned competitor setup. On a Linux/macOS machine with a built Nift binary:</p>
+  <pre><code>./scripts/setup-tools.sh
+
+python3 -u scripts/benchmark.py \
+  --nift /path/to/nift \
+  --hugo .benchmark-tools/hugo \
+  --node-project . \
+  --pages 10000 \
+  --warmups 1 \
+  --repetitions 3 \
+  --output evidence/results.json</code></pre>
+  <p>The benchmark is intentionally reproducible rather than instant: Astro and VitePress take substantially longer than Nift/Hugo on this workload.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Interpretation</p>
+  <h2>What this does—and does not—show.</h2>
+  <div class="interpret-grid">
+    <article><strong>It does show</strong><p>On this deterministic 10,000-page clean-build fixture, Nift had the lowest measured median by a large margin.</p></article>
+    <article><strong>It does not show</strong><p>That Nift is universally faster on every workload, or that clean builds are equivalent to each framework's intended dev-server/HMR experience.</p></article>
+    <article><strong>Why publish it</strong><p>The differences are large enough to invite skepticism. Publishing the harness and raw samples makes that skepticism testable.</p></article>
+  </div>
+</section>
+</main>
