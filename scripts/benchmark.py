@@ -8,12 +8,67 @@ written. This prevents partial comparisons from being mistaken for evidence.
 import argparse, json, os, platform, shutil, statistics, subprocess, sys, tempfile, time
 from pathlib import Path
 
-def run(cmd,cwd,env=None):
-    t=time.perf_counter()
-    p=subprocess.run(cmd,cwd=cwd,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True)
+def _linux_process_group_rss_kib(pgid):
+    """Return aggregate RSS KiB for all live processes in one Linux process group."""
+    total=0
+    proc=Path("/proc")
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            stat_fields=(entry/"stat").read_text().split()
+            if len(stat_fields) < 5 or int(stat_fields[4]) != pgid:
+                continue
+            for line in (entry/"status").read_text().splitlines():
+                if line.startswith("VmRSS:"):
+                    total += int(line.split()[1])
+                    break
+        except (FileNotFoundError, ProcessLookupError, PermissionError, ValueError):
+            continue
+    return total
+
+def run(cmd,cwd,env=None,measure_memory=True,poll_interval=0.01):
+    """Run one build and return (elapsed_seconds, peak_aggregate_rss_kib).
+
+    Memory is measured as aggregate RSS across the spawned process group on Linux,
+    sampled every 10 ms. This captures Node child processes as well as the parent
+    instead of reporting only the top-level CLI process.
+    """
+    if measure_memory and platform.system() != "Linux":
+        raise RuntimeError("peak aggregate RSS measurement currently requires Linux")
+
+    start=time.perf_counter()
+    p=subprocess.Popen(
+        cmd,
+        cwd=cwd,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    peak_rss_kib=0
+
+    while p.poll() is None:
+        if measure_memory:
+            try:
+                peak_rss_kib=max(peak_rss_kib,_linux_process_group_rss_kib(p.pid))
+            except FileNotFoundError:
+                pass
+        time.sleep(poll_interval)
+
+    # Catch the final observable state if the process group still exists briefly.
+    if measure_memory:
+        try:
+            peak_rss_kib=max(peak_rss_kib,_linux_process_group_rss_kib(p.pid))
+        except FileNotFoundError:
+            pass
+
+    stderr=p.stderr.read() if p.stderr else ""
+    elapsed=time.perf_counter()-start
     if p.returncode:
-        raise RuntimeError(f"{' '.join(cmd)} failed:\n{p.stderr[-2000:]}")
-    return time.perf_counter()-t
+        raise RuntimeError(f"{' '.join(cmd)} failed:\n{stderr[-2000:]}")
+    return elapsed,peak_rss_kib
 
 def version(cmd,timeout=10):
     try:
@@ -142,7 +197,8 @@ def main():
         fixtures["VitePress"]=vitepress_fixture(base,a.pages,project)
         print("[setup] fixtures ready; timed runs begin", file=sys.stderr, flush=True)
         for name,(cwd,cmd,outputs) in fixtures.items():
-            samples=[]
+            time_samples=[]
+            rss_samples=[]
             total=a.warmups+a.repetitions
             for i in range(total):
                 if i < a.warmups:
@@ -151,21 +207,34 @@ def main():
                     label=f"measured run {i-a.warmups+1}/{a.repetitions}"
                 print(f"[{name}] {label}", file=sys.stderr, flush=True)
                 clean_outputs(cwd,outputs)
-                elapsed=run(cmd,cwd)
-                print(f"[{name}] {label} finished in {elapsed:.3f}s", file=sys.stderr, flush=True)
-                if i>=a.warmups: samples.append(elapsed)
+                elapsed,peak_rss_kib=run(cmd,cwd)
+                peak_rss_mib=peak_rss_kib/1024.0
+                print(
+                    f"[{name}] {label} finished in {elapsed:.3f}s; "
+                    f"peak aggregate RSS {peak_rss_mib:.1f} MiB",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                if i>=a.warmups:
+                    time_samples.append(elapsed)
+                    rss_samples.append(peak_rss_mib)
             results[name]={
-                "seconds":samples,
-                "median_seconds":statistics.median(samples),
-                "min_seconds":min(samples),
-                "max_seconds":max(samples),
+                "seconds":time_samples,
+                "median_seconds":statistics.median(time_samples),
+                "min_seconds":min(time_samples),
+                "max_seconds":max(time_samples),
+                "peak_rss_mib":rss_samples,
+                "median_peak_rss_mib":statistics.median(rss_samples),
+                "min_peak_rss_mib":min(rss_samples),
+                "max_peak_rss_mib":max(rss_samples),
             }
 
     out={
-        "schema":2,
+        "schema":3,
         "workload":"clean production build",
         "pages":a.pages,
         "fixture_note":"Equivalent small pages generated from tool-native source; dependency installation and fixture generation are outside timed runs.",
+        "memory_measurement":"Linux peak aggregate RSS across the spawned process group, sampled every 10 ms during each build.",
         "warmups":a.warmups,
         "repetitions":a.repetitions,
         "machine":machine_info(),
