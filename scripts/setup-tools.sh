@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
+TOOLS="$ROOT/.benchmark-tools"
+HUGO_VERSION=0.164.0
+mkdir -p "$TOOLS"
+
+case "$(uname -s)/$(uname -m)" in
+  Linux/x86_64|Linux/amd64) hugo_asset="hugo_${HUGO_VERSION}_linux-amd64.tar.gz" ;;
+  Linux/arm64|Linux/aarch64) hugo_asset="hugo_${HUGO_VERSION}_linux-arm64.tar.gz" ;;
+  Darwin/arm64|Darwin/aarch64) hugo_asset="hugo_${HUGO_VERSION}_darwin-universal.tar.gz" ;;
+  Darwin/x86_64|Darwin/amd64) hugo_asset="hugo_${HUGO_VERSION}_darwin-universal.tar.gz" ;;
+  *) echo "Unsupported host for pinned Hugo binary: $(uname -s)/$(uname -m)" >&2; exit 2 ;;
+esac
+
+if [ ! -x "$TOOLS/hugo" ]; then
+  tmp="$(mktemp -d "${TMPDIR:-/tmp}/nift-benchmark-tools.XXXXXX")"
+  trap 'rm -rf "$tmp"' EXIT HUP INT TERM
+  url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${hugo_asset}"
+  echo "Downloading Hugo ${HUGO_VERSION}..."
+  curl -fL "$url" -o "$tmp/hugo.tar.gz"
+  tar -xzf "$tmp/hugo.tar.gz" -C "$tmp"
+  cp "$tmp/hugo" "$TOOLS/hugo"
+  chmod 0755 "$TOOLS/hugo"
+fi
+
+echo "Installing pinned Astro/Next.js/VitePress dependencies..."
+cd "$ROOT"
+npm install --ignore-scripts --no-audit --no-fund
+
+echo
+echo "Pinned tools ready:"
+"$TOOLS/hugo" version | head -1
+"$ROOT/node_modules/.bin/astro" --version
+"$ROOT/node_modules/.bin/next" --version
+"$ROOT/node_modules/.bin/vitepress" --version

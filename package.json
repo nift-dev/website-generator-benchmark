@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "description": "Pinned dependencies for reproducible website-generator benchmarks",
+  "dependencies": {
+    "astro": "7.2.4",
+    "next": "16.3.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "vitepress": "1.6.4"
+  }
+}
