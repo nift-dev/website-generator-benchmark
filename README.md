@@ -37,7 +37,7 @@ python3 -u scripts/benchmark.py \
 
 Raw results belong in `evidence/results.json` and should be committed alongside the website revision that interprets them.
 
-Progress is printed live to stderr before and after every warmup/measured run, so a long generator cannot look like a hung process.
+Progress is printed live to stderr from startup onward: dependency checks, version detection, fixture generation, and every warmup/measured run. A slow phase should never look like a hung process.
 
 ## Evidence rule
 

@@ -15,9 +15,21 @@ def run(cmd,cwd,env=None):
         raise RuntimeError(f"{' '.join(cmd)} failed:\n{p.stderr[-2000:]}")
     return time.perf_counter()-t
 
-def version(cmd):
-    p=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+def version(cmd,timeout=10):
+    try:
+        p=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=timeout)
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(f"version probe timed out after {timeout}s: {' '.join(cmd)}")
+    if p.returncode:
+        raise RuntimeError(f"version probe failed ({p.returncode}): {' '.join(cmd)}")
     return p.stdout.splitlines()[0].strip() if p.stdout else "unknown"
+
+def package_version(project,name):
+    path=Path(project).resolve()/"node_modules"/name/"package.json"
+    try:
+        return json.loads(path.read_text())["version"]
+    except Exception as exc:
+        raise RuntimeError(f"could not read installed {name} version from {path}: {exc}")
 
 def link_node_modules(fixture,project):
     target=Path(project).resolve()/"node_modules"
@@ -95,26 +107,40 @@ def main():
     ap.add_argument("--output",default="evidence/results.json")
     a=ap.parse_args()
 
+    print("[setup] starting benchmark", file=sys.stderr, flush=True)
     nift=str(Path(a.nift).resolve()); hugo=str(Path(a.hugo).resolve()); project=Path(a.node_project).resolve()
-    for x in [nift,hugo,project/"node_modules/.bin/astro",project/"node_modules/.bin/vitepress"]:
-        if not Path(x).exists(): raise SystemExit(f"missing benchmark dependency: {x}")
 
+    dependencies=[nift,hugo,project/"node_modules/.bin/astro",project/"node_modules/.bin/vitepress"]
+    print("[setup] checking dependencies", file=sys.stderr, flush=True)
+    for x in dependencies:
+        if not Path(x).exists():
+            raise SystemExit(f"missing benchmark dependency: {x}")
+    print("[setup] dependencies found", file=sys.stderr, flush=True)
+
+    print("[setup] reading tool versions", file=sys.stderr, flush=True)
     tools={
         "Nift":version([nift,"--version"]),
         "Hugo":version([hugo,"version"]),
-        "Astro":version([str(project/"node_modules/.bin/astro"),"--version"]),
-        "VitePress":version([str(project/"node_modules/.bin/vitepress"),"--version"]),
+        "Astro":"Astro "+package_version(project,"astro"),
+        "VitePress":"VitePress "+package_version(project,"vitepress"),
     }
+    for name,value in tools.items():
+        print(f"[setup] {name}: {value}", file=sys.stderr, flush=True)
 
     results={}
     with tempfile.TemporaryDirectory(prefix="nift-comparative-") as td:
         base=Path(td)
-        fixtures={
-            "Nift":nift_fixture(base,a.pages,nift),
-            "Hugo":hugo_fixture(base,a.pages,hugo),
-            "Astro":astro_fixture(base,a.pages,project),
-            "VitePress":vitepress_fixture(base,a.pages,project),
-        }
+        print(f"[setup] generating {a.pages:,}-page fixtures", file=sys.stderr, flush=True)
+        fixtures={}
+        print("[fixture] Nift", file=sys.stderr, flush=True)
+        fixtures["Nift"]=nift_fixture(base,a.pages,nift)
+        print("[fixture] Hugo", file=sys.stderr, flush=True)
+        fixtures["Hugo"]=hugo_fixture(base,a.pages,hugo)
+        print("[fixture] Astro", file=sys.stderr, flush=True)
+        fixtures["Astro"]=astro_fixture(base,a.pages,project)
+        print("[fixture] VitePress", file=sys.stderr, flush=True)
+        fixtures["VitePress"]=vitepress_fixture(base,a.pages,project)
+        print("[setup] fixtures ready; timed runs begin", file=sys.stderr, flush=True)
         for name,(cwd,cmd,outputs) in fixtures.items():
             samples=[]
             total=a.warmups+a.repetitions
