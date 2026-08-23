@@ -10,7 +10,11 @@ The primary workload is a **10,000-page clean production build** using Nift, Hug
 - Astro 7.2.4
 - VitePress 1.6.4
 
-Nift is supplied explicitly with `--nift`, so the result records the exact binary version actually measured.
+Nift is installed by `setup-tools.sh` from the official installer
+(`curl -fsSL https://nift.dev/install | sh`) into `.benchmark-tools/`, so the
+result records the exact binary version actually measured. To reproduce a
+specific Nift release, set `NIFT_VERSION` before running setup (the installer
+honours it).
 
 ## Setup
 
@@ -18,15 +22,17 @@ Nift is supplied explicitly with `--nift`, so the result records the exact binar
 ./scripts/setup-tools.sh
 ```
 
-That downloads the pinned Hugo binary for the current Linux/macOS host and installs the pinned Node dependencies locally.
+That installs the latest official Nift release, downloads the pinned Hugo
+binary for the current Linux/macOS host, and installs the pinned Node
+dependencies locally.
 
 ## Run
 
-From this repository, with a built Nift binary:
+From this repository, with the tools installed by setup:
 
 ```sh
 python3 -u scripts/benchmark.py \
-  --nift /path/to/nift \
+  --nift .benchmark-tools/nift \
   --hugo .benchmark-tools/hugo \
   --node-project . \
   --pages 10000 \
