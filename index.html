@@ -181,13 +181,14 @@
   <pre><code>./scripts/setup-tools.sh
 
 python3 -u scripts/benchmark.py \
-  --nift /path/to/nift \
+  --nift .benchmark-tools/nift \
   --hugo .benchmark-tools/hugo \
   --node-project . \
   --pages 10000 \
   --warmups 1 \
   --repetitions 3 \
   --output evidence/results.json</code></pre>
+  <p><code>setup-tools.sh</code> installs the official Nift release from <code>curl -fsSL https://nift.dev/install | sh</code>, the pinned Hugo binary, and the pinned Node dependencies into <code>.benchmark-tools/</code>. Set <code>NIFT_VERSION</code> before setup to pin a specific Nift release.</p>
   <p>The run takes several minutes because Astro and VitePress are substantially slower on this fixture. Progress is printed before and after every phase and repetition.</p>
 </section>
 
