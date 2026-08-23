@@ -31,42 +31,42 @@
   <div class="chart-grid">
     <figure class="benchmark-graph">
       <figcaption><strong>Clean-build time</strong><span>Median · logarithmic scale</span></figcaption>
-      <div class="graph-axis"><span>0.1 s</span><span>1 s</span><span>10 s</span><span>100 s+</span></div>
+      <div class="graph-axis"><span style="left:0">0.1 s</span><span style="left:31.49%;transform:translateX(-50%)">1 s</span><span style="left:62.97%;transform:translateX(-50%)">10 s</span><span style="left:94.46%;transform:translateX(-100%)">100 s+</span></div>
       <div class="graph-row">
   <div class="graph-label"><strong>Nift</strong><span>0.165 s</span></div>
-  <div class="graph-track"><i class="graph-bar winner" style="--bar:6.86%"></i></div>
+  <div class="graph-track" style="--t1:31.49%;--t2:62.97%;--t3:94.46%"><i class="graph-bar winner" style="--bar:6.86%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>Hugo</strong><span>0.467 s</span></div>
-  <div class="graph-track"><i class="graph-bar" style="--bar:21.08%"></i></div>
+  <div class="graph-track" style="--t1:31.49%;--t2:62.97%;--t3:94.46%"><i class="graph-bar" style="--bar:21.08%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>VitePress</strong><span>58.49 s</span></div>
-  <div class="graph-track"><i class="graph-bar" style="--bar:87.12%"></i></div>
+  <div class="graph-track" style="--t1:31.49%;--t2:62.97%;--t3:94.46%"><i class="graph-bar" style="--bar:87.12%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>Astro</strong><span>124.79 s</span></div>
-  <div class="graph-track"><i class="graph-bar" style="--bar:97.48%"></i></div>
+  <div class="graph-track" style="--t1:31.49%;--t2:62.97%;--t3:94.46%"><i class="graph-bar" style="--bar:97.48%"></i></div>
 </div>
     </figure>
     <figure class="benchmark-graph">
       <figcaption><strong>Peak RAM</strong><span>Median aggregate RSS · logarithmic scale</span></figcaption>
-      <div class="graph-axis"><span>10 MiB</span><span>100 MiB</span><span>1 GiB</span><span>4 GiB</span></div>
+      <div class="graph-axis"><span style="left:3.47%">10 MiB</span><span style="left:39.23%;transform:translateX(-50%)">100 MiB</span><span style="left:75.37%;transform:translateX(-50%)">1 GiB</span><span style="left:96.93%;transform:translateX(-100%)">4 GiB</span></div>
       <div class="graph-row">
   <div class="graph-label"><strong>Nift</strong><span>10.0 MiB</span></div>
-  <div class="graph-track"><i class="graph-bar winner" style="--bar:3.43%"></i></div>
+  <div class="graph-track" style="--t1:3.47%;--t2:39.23%;--t3:75.37%;--t4:96.93%"><i class="graph-bar winner" style="--bar:3.43%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>Hugo</strong><span>237 MiB</span></div>
-  <div class="graph-track"><i class="graph-bar" style="--bar:52.65%"></i></div>
+  <div class="graph-track" style="--t1:3.47%;--t2:39.23%;--t3:75.37%;--t4:96.93%"><i class="graph-bar" style="--bar:52.65%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>VitePress</strong><span>3,687 MiB</span></div>
-  <div class="graph-track"><i class="graph-bar" style="--bar:95.27%"></i></div>
+  <div class="graph-track" style="--t1:3.47%;--t2:39.23%;--t3:75.37%;--t4:96.93%"><i class="graph-bar" style="--bar:95.27%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>Astro</strong><span>3,218 MiB</span></div>
-  <div class="graph-track"><i class="graph-bar" style="--bar:93.15%"></i></div>
+  <div class="graph-track" style="--t1:3.47%;--t2:39.23%;--t3:75.37%;--t4:96.93%"><i class="graph-bar" style="--bar:93.15%"></i></div>
 </div>
     </figure>
   </div>
@@ -86,34 +86,34 @@
   <div class="chart-grid">
     <figure class="benchmark-graph">
       <figcaption><strong>Incremental build time</strong><span>Median · linear scale to 0.2 s</span></figcaption>
-      <div class="graph-axis"><span>0</span><span>0.05 s</span><span>0.10 s</span><span>0.20 s</span></div>
+      <div class="graph-axis"><span style="left:0">0</span><span style="left:25%;transform:translateX(-50%)">0.05 s</span><span style="left:50%;transform:translateX(-50%)">0.10 s</span><span style="left:100%;transform:translateX(-100%)">0.20 s</span></div>
       <div class="graph-row">
   <div class="graph-label"><strong>No-op</strong><span>0.100 s</span></div>
-  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:50.00%"></i></div>
+  <div class="graph-track linear" style="--t1:25%;--t2:50%;--t3:100%"><i class="graph-bar winner" style="--bar:50.00%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>One page changed</strong><span>0.119 s</span></div>
-  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:59.72%"></i></div>
+  <div class="graph-track linear" style="--t1:25%;--t2:50%;--t3:100%"><i class="graph-bar winner" style="--bar:59.72%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>Shared template changed</strong><span>0.176 s</span></div>
-  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:87.89%"></i></div>
+  <div class="graph-track linear" style="--t1:25%;--t2:50%;--t3:100%"><i class="graph-bar winner" style="--bar:87.89%"></i></div>
 </div>
     </figure>
     <figure class="benchmark-graph">
       <figcaption><strong>Incremental peak RAM</strong><span>Median aggregate RSS · linear scale to 12 MiB</span></figcaption>
-      <div class="graph-axis"><span>0</span><span>4 MiB</span><span>8 MiB</span><span>12 MiB</span></div>
+      <div class="graph-axis"><span style="left:0">0</span><span style="left:33.33%;transform:translateX(-50%)">4 MiB</span><span style="left:66.67%;transform:translateX(-50%)">8 MiB</span><span style="left:100%;transform:translateX(-100%)">12 MiB</span></div>
       <div class="graph-row">
   <div class="graph-label"><strong>No-op</strong><span>9.6 MiB</span></div>
-  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:80.27%"></i></div>
+  <div class="graph-track linear" style="--t1:33.33%;--t2:66.67%;--t3:100%"><i class="graph-bar winner" style="--bar:80.27%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>One page changed</strong><span>9.7 MiB</span></div>
-  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:80.99%"></i></div>
+  <div class="graph-track linear" style="--t1:33.33%;--t2:66.67%;--t3:100%"><i class="graph-bar winner" style="--bar:80.99%"></i></div>
 </div>
 <div class="graph-row">
   <div class="graph-label"><strong>Shared template changed</strong><span>11.3 MiB</span></div>
-  <div class="graph-track linear"><i class="graph-bar winner" style="--bar:94.43%"></i></div>
+  <div class="graph-track linear" style="--t1:33.33%;--t2:66.67%;--t3:100%"><i class="graph-bar winner" style="--bar:94.43%"></i></div>
 </div>
     </figure>
   </div>
