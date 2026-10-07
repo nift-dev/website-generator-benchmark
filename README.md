@@ -83,3 +83,20 @@ The schema-4 run in `evidence/results.json` records, for 10,000-page clean build
 - Astro: 124.79 s, 3,218 MiB
 
 The same run records Nift `build-updated` medians of 0.100 s (no-op), 0.119 s (one page changed), and 0.176 s (shared template invalidating all 10,000 pages), with median peak RAM between 9.6 and 11.3 MiB.
+
+## October campaign (new measurement protocol)
+
+Use `scripts/campaign.py --nift PATH --hugo PATH --node-project . --pages 10000
+--samples 5 --warmups 1 --output evidence/campaign-10000.json` for schema-5
+measurements. `scripts/summarize.py --input FILE --output SUMMARY` verifies every
+sample and retained summary. The old schema-4 evidence remains historical.
+
+Schema 5 validates route/title/heading/body for every build, uses a minimal
+VitePress theme (which still hydrates and generates a 404 page), enables Hugo raw
+HTML and Astro file routes. It separates fresh-fixture application-cold and
+warm full builds. Nift incremental output must agree byte-for-byte with a full
+rebuild of the same mutated input. Direct C-supervised fork/exec latency excludes
+Python orchestration; kernel wait4 child high-water RSS replaces sampled
+aggregate RSS. These memory metrics are **not interchangeable**. Source/tool
+preparation is outside timing. OS caches remain uncontrolled; this small-page
+fixture measures generated-page throughput, not complete real-site equivalence.

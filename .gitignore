@@ -1,2 +1,6 @@
 .benchmark-tools/
 node_modules/
+
+__pycache__/
+
+.nift/.lock
