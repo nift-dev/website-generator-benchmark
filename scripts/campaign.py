@@ -41,7 +41,8 @@ def validate(name,cwd,n,leaf_marker=None,template_marker=None):
         title=re.search(r'<title>(.*?)</title>',text,re.S)
         heading=re.search(r'<h1\b[^>]*>(.*?)</h1>',text,re.S)
         strip=lambda v: html.unescape(re.sub(r'<[^>]+>','',v)).strip().replace('\u200b','')
-        if not title or not title.group(1).startswith(f'Page {i}') or not heading or not strip(heading.group(1)).startswith(f'Page {i}') or 'Equivalent benchmark content.' not in text:
+        heading_text=strip(re.sub(r'<a\b[^>]*class="header-anchor"[^>]*>.*?</a>','',heading.group(1),flags=re.S)) if heading else None
+        if not title or title.group(1) not in (f'Page {i}',f'Page {i} | Benchmark') or heading_text!=f'Page {i}' or 'Equivalent benchmark content.' not in text:
             raise RuntimeError(f'{name} content oracle failed on page {i}')
         if leaf_marker and i==1 and leaf_marker not in text: raise RuntimeError('incremental leaf stale')
         if template_marker and template_marker not in text: raise RuntimeError('incremental shared template stale')
