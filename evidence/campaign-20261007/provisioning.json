@@ -1,0 +1,12 @@
+{
+  "provider": "Linode",
+  "type": "g6-standard-4",
+  "region": "us-east",
+  "image": "linode/ubuntu24.04",
+  "created_utc": "2026-10-07T10:13:37",
+  "hourly_usd": 0.072,
+  "backups_enabled": false,
+  "instance_identity_sha256": "a49cad710186d1a849dd403ef6350016093bcd709ae3d861ec4ab9c65613cb0e",
+  "deleted_verified_utc": "2026-10-07T13:40:37.330862+00:00",
+  "verification_http_status": 404
+}
