@@ -20,6 +20,7 @@ def main():
    full=[nift,'build','--all'];target=[nift,'build','page-1']
    ref=dict(id=f'Nift/{pages}/fresh-full',pages=pages,command=full,samples=[]);job=dict(id=f'Nift/{pages}/targeted-one-page',pages=pages,command=target,samples=[]);result['jobs'] += [ref,job]
    for rnd in range(a.samples+a.warmups):
+    cwd,_,_=legacy.nift_fixture(base/str(pages)/str(rnd),pages,nift);p=cwd/'.nift/config.json';c=json.loads(p.read_text());c['config']['build-threads']=1;p.write_text(json.dumps(c))
     shutil.rmtree(cwd/'public',ignore_errors=True);shutil.rmtree(cwd/'.nift/public',ignore_errors=True)
     rec,out,err=measure(full,cwd,env,120);rec.update(round=rnd,warmup=rnd<a.warmups,correct=False);ref['samples'].append(rec);save()
     if rec['exit_code'] or rec['timeout']:raise RuntimeError('full failed')
