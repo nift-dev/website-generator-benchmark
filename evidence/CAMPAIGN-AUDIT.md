@@ -38,3 +38,7 @@ need a separately designed comparable server-mode experiment.
 Comparability: correcting VitePress theme, Hugo content, cache state and timing
 measurement changes the workload/measurement substantially. New numbers cannot
 be presented as speedups against schema-4 evidence. Preserve old results.
+
+Freshness check before official website timing: upgrade Hugo 0.164.0 → 0.167.0
+and Astro 7.2.4 → 7.3.6 (current stable release metadata); VitePress remains 1.6.4.
+Original pilot used the earlier pins; a new-version pilot must pass before timing.

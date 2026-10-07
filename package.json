@@ -2,7 +2,7 @@
   "private": true,
   "description": "Pinned dependencies for reproducible website-generator benchmarks",
   "dependencies": {
-    "astro": "7.2.4",
+    "astro": "7.3.6",
     "vitepress": "1.6.4"
   }
 }

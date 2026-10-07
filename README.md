@@ -1,102 +1,68 @@
-# Website generator benchmark
+# Website Generator Benchmark
 
-A standalone, evidence-first benchmark site for Nift comparisons.
+Correctness-gated Linux measurements of **minimal generated-page throughput** in
+Nift, Hugo, Astro and VitePress. This synthetic fixture is not a real-site
+migration or a universal SSG ranking. The October campaign audits are in
+[evidence/CAMPAIGN-AUDIT.md](evidence/CAMPAIGN-AUDIT.md).
 
-The primary workload is a **10,000-page clean production build** using Nift, Hugo, Astro and VitePress, recording both wall-clock time and peak aggregate process-tree RSS. Fixture generation and dependency installation are outside timed runs. The harness performs warmups followed by repeated measured builds and refuses to write a partial comparison.
+## Frozen tools
 
-## Pinned competitors
-
-- Hugo 0.164.0
-- Astro 7.2.4
-- VitePress 1.6.4
-
-Nift is installed by `setup-tools.sh` from the official installer
-(`curl -fsSL https://nift.dev/install | sh`) into `.benchmark-tools/`, so the
-result records the exact binary version actually measured. To reproduce a
-specific Nift release, set `NIFT_VERSION` before running setup (the installer
-honours it).
-
-## Setup
+Official campaign: Nift 4.7.2, Hugo 0.167.0, Astro 7.3.6, VitePress 1.6.4,
+Node.js 24.21.0. The package lock freezes transitive dependencies; raw evidence
+records binaries' versions/hashes and OS/compiler/runtime metadata. Ubuntu distro
+packages are retained in the shared provisioning manifest.
 
 ```sh
-./scripts/setup-tools.sh
+NIFT_VERSION=4.7.2 ./scripts/setup-tools.sh
+python3 scripts/test_measurement.py
+python3 scripts/campaign.py --nift .benchmark-tools/nift \
+  --hugo .benchmark-tools/hugo --node-project . --pages 10000 \
+  --samples 5 --warmups 1 --timeout 1200 --output evidence/campaign-10000.json
+python3 scripts/summarize.py --input evidence/campaign-10000.json \
+  --output evidence/campaign-10000-summary.json
 ```
 
-That installs the latest official Nift release, downloads the pinned Hugo
-binary for the current Linux/macOS host, and installs the pinned Node
-dependencies locally.
+Repeat at 100 and 1000 pages for the scaling matrix. Run serially with one logical
+CPU affinity (`taskset -c 0` on the official node). Nift build threads=1 and Hugo
+GOMAXPROCS=1. Dependencies, toolchain compilation and fixture generation are
+outside all timed intervals.
 
-## Run
+For the disposable Ubuntu node, the sibling shell-benchmark repository's
+`scripts/provision-tools.sh` prepares all three suites under `/opt/campaign` with
+checksum-verified releases. Never execute that host provisioning script against
+a personal workstation.
 
-From this repository, with the tools installed by setup:
+## What is measured
 
-```sh
-python3 -u scripts/benchmark.py \
-  --nift .benchmark-tools/nift \
-  --hugo .benchmark-tools/hugo \
-  --node-project . \
-  --pages 10000 \
-  --warmups 1 \
-  --repetitions 3 \
-  --output evidence/results.json
-```
+Schema 5 separates **application-cold** (whole fixture recreated) from **warm
+full** (generated output/cache directories removed, other application state
+retained). Prepared pinned node_modules/toolchains are shared across runs.
+Neither mode flushes OS caches or claims machine-cold execution.
 
-Raw results belong in `evidence/results.json` and should be committed alongside the website revision that interprets them. Each measured run records elapsed seconds and peak aggregate RSS in MiB.
+Every build checks the complete route inventory, exact page title/heading and
+expected body. Hugo explicitly allows raw HTML. Astro uses file routes.
+VitePress uses a minimal custom theme; its hydration assets and one extra 404
+page remain part of the build and are disclosed. The fixture measures each
+system's natural build path to equivalent simple page content, not byte-identical
+browser applications.
 
-Progress is printed live to stderr from startup onward: dependency checks, version detection, fixture generation, and every warmup/measured run. A slow phase should never look like a hung process.
+A compiled C supervisor measures fork/exec through wait4 completion, excluding
+Python orchestration and supervisor launch. Linux wait4 high-water RSS is a
+waited-child maximum, **not simultaneous aggregate process-tree RSS**. No
+10 ms polling loop quantizes short builds. Raw warmup/measured samples are
+retained, tool order rotates, and correctness/timeouts stop publication.
 
-## Evidence rule
+Nift-only no-op, one-leaf and shared-template incremental cases are separate.
+Every incremental output set must agree byte-for-byte with a full rebuild of the
+same mutated input. They are not comparisons against competitors' dev/HMR modes.
 
-Do not publish a comparative result unless all requested tools complete the same retained run. Do not substitute historical numbers for a failed or incomplete run.
+## Historical evidence
 
-## Published evidence
+`evidence/results.json` and the original standalone site's numbers retain the
+August schema-4 experiment. They used different fixture/theme/configuration,
+three repetitions, stale CLI spellings and sampled aggregate process-group RSS.
+New results cannot be called speedups against those medians. The legacy runner
+is retired; use Git history for its old implementation and methodology.
 
-The current retained run is published at https://nift.dev/website-generator-benchmark/ and its raw JSON is retained verbatim as `evidence/results.json` and published byte-for-byte as `public/evidence/results.json`.
-
-## Memory measurement
-
-RAM is measured on Linux as **peak aggregate RSS across the spawned process group**, sampled every 10 ms while the build runs. This deliberately includes child processes used by Node-based generators instead of reporting only the parent CLI process.
-
-Because the memory sampler runs during the same build, the retained timing and RAM samples describe the same measured repetitions. The harness currently refuses RAM benchmarking on non-Linux hosts rather than silently switching to a non-equivalent metric.
-
-## Nift incremental measurements
-
-The same run also records a separate **Nift-only development-loop benchmark** on the 10,000-page fixture. These numbers are intentionally not presented as cross-generator comparisons.
-
-Three `nift build-updated` cases are retained with the same wall-clock + peak aggregate RSS measurements:
-
-1. **No-op** — nothing changed.
-2. **One page changed** — one independent content page is changed before each run.
-3. **Shared template changed** — the common template is changed before each run, so all 10,000 outputs legitimately need rebuilding.
-
-The one-page and shared-template cases mutate the fixture before every warmup/measured run and force a distinct filesystem timestamp so the modified-mode dependency check is deterministic even on filesystems with coarse timestamp resolution.
-
-The resulting JSON uses schema 4 and stores these separately under `nift_incremental`. They should be interpreted as Nift iteration evidence, not compared directly with the clean production-build timings of Hugo, Astro or VitePress.
-
-## Current retained result
-
-The schema-4 run in `evidence/results.json` records, for 10,000-page clean builds:
-
-- Nift: 0.165 s median, 10.0 MiB median peak aggregate RSS
-- Hugo: 0.467 s, 237 MiB
-- VitePress: 58.49 s, 3,687 MiB
-- Astro: 124.79 s, 3,218 MiB
-
-The same run records Nift `build-updated` medians of 0.100 s (no-op), 0.119 s (one page changed), and 0.176 s (shared template invalidating all 10,000 pages), with median peak RAM between 9.6 and 11.3 MiB.
-
-## October campaign (new measurement protocol)
-
-Use `scripts/campaign.py --nift PATH --hugo PATH --node-project . --pages 10000
---samples 5 --warmups 1 --output evidence/campaign-10000.json` for schema-5
-measurements. `scripts/summarize.py --input FILE --output SUMMARY` verifies every
-sample and retained summary. The old schema-4 evidence remains historical.
-
-Schema 5 validates route/title/heading/body for every build, uses a minimal
-VitePress theme (which still hydrates and generates a 404 page), enables Hugo raw
-HTML and Astro file routes. It separates fresh-fixture application-cold and
-warm full builds. Nift incremental output must agree byte-for-byte with a full
-rebuild of the same mutated input. Direct C-supervised fork/exec latency excludes
-Python orchestration; kernel wait4 child high-water RSS replaces sampled
-aggregate RSS. These memory metrics are **not interchangeable**. Source/tool
-preparation is outside timing. OS caches remain uncontrolled; this small-page
-fixture measures generated-page throughput, not complete real-site equivalence.
+New reports are published in the Nift Labs benchmark family. Local pilot outputs
+are validation evidence, not official comparative results.

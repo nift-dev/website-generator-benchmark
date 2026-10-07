@@ -2,7 +2,7 @@
 set -eu
 ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 TOOLS="$ROOT/.benchmark-tools"
-HUGO_VERSION=0.164.0
+HUGO_VERSION=0.167.0
 mkdir -p "$TOOLS"
 
 say() { printf '\n== %s\n' "$*"; }
@@ -16,7 +16,7 @@ case "$(uname -s)/$(uname -m)" in
   *) echo "Unsupported host for pinned Hugo binary: $(uname -s)/$(uname -m)" >&2; exit 2 ;;
 esac
 
-if [ ! -x "$TOOLS/hugo" ]; then
+if [ ! -x "$TOOLS/hugo" ] || ! "$TOOLS/hugo" version | head -1 | grep -q "v${HUGO_VERSION}"; then
   tmp="$(mktemp -d "${TMPDIR:-/tmp}/nift-benchmark-tools.XXXXXX")"
   trap 'rm -rf "$tmp"' EXIT HUP INT TERM
   url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${hugo_asset}"
@@ -34,10 +34,10 @@ else
   echo "Nift already installed at $TOOLS/nift"
 fi
 
-say "Installing pinned Astro/VitePress dependencies (npm install)"
+say "Installing pinned Astro/VitePress dependencies (npm ci)"
 echo "This downloads the pinned node_modules and can take a few minutes; it is not stuck."
 cd "$ROOT"
-npm install --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund
 
 echo
 echo "Pinned tools ready:"

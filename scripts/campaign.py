@@ -73,6 +73,11 @@ def main():
         tools={'Nift':identity(nift,['--version']),'Hugo':identity(hugo,['version']),
                'Astro':legacy.package_version(project,'astro'),'VitePress':legacy.package_version(project,'vitepress')},
         jobs=[],samples=a.samples,warmups=a.warmups)
+    if not result['tools']['Hugo']['version'].startswith('hugo v0.167.0'):
+        raise SystemExit('Hugo pin mismatch: require 0.167.0')
+    declared=json.loads((project/'package.json').read_text())['dependencies']
+    for pkg,label in (('astro','Astro'),('vitepress','VitePress')):
+        if result['tools'][label]!=declared[pkg]: raise SystemExit(label+' pin mismatch')
     dest=Path(a.output); dest.parent.mkdir(parents=True,exist_ok=True)
     def save(): dest.write_text(json.dumps(result,indent=2)+'\n')
     with tempfile.TemporaryDirectory(prefix='website-campaign-') as td:

@@ -231,6 +231,7 @@ def machine_info():
     return info
 
 def main():
+    raise SystemExit("Legacy schema-4 runner retired: use scripts/campaign.py; see README.md")
     ap=argparse.ArgumentParser()
     ap.add_argument("--nift",required=True)
     ap.add_argument("--hugo",required=True)
