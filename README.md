@@ -34,9 +34,9 @@ a personal workstation.
 
 ## What is measured
 
-Schema 5 separates **application-cold** (whole fixture recreated) from **warm
+Schema 5 separates **fresh fixture** (raw mode `application-cold`, whole fixture recreated) from **warm
 full** (generated output/cache directories removed, other application state
-retained). Prepared pinned node_modules/toolchains are shared across runs.
+retained). Prepared pinned node_modules/toolchains and generated dependency caches are shared across runs. Astro/Vite creates `node_modules/.vite`; `.astro` may also exist there. This is a fresh-project-directory boundary, not a reset of all application caches. The campaign retains their inventory.
 Neither mode flushes OS caches or claims machine-cold execution.
 
 Every build checks the complete route inventory, exact page title/heading and

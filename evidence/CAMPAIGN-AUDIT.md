@@ -42,3 +42,5 @@ be presented as speedups against schema-4 evidence. Preserve old results.
 Freshness check before official website timing: upgrade Hugo 0.164.0 → 0.167.0
 and Astro 7.2.4 → 7.3.6 (current stable release metadata); VitePress remains 1.6.4.
 Original pilot used the earlier pins; a new-version pilot must pass before timing.
+
+Post-collection cache audit: shared node_modules/.vite contains generated dependency optimizer files; node_modules/.astro exists but is empty. Therefore the website raw enum application-cold is reported as fresh-fixture with prepared shared dependencies/cache, not complete application-cache-cold. Fixtures/output are fresh, shared dependencies and OS caches are retained; all samples remain unchanged. This narrows the interpretation without inventing cold-start measurements.
