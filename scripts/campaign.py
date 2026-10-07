@@ -71,6 +71,7 @@ def main():
                'VitePress also generates one 404 page; validated and disclosed, excluded from corpus count.',
                'wait4 RSS not aggregate tree RSS; see measurement policy.'],
         tools={'Nift':identity(nift,['--version']),'Hugo':identity(hugo,['version']),
+               'Node.js':identity(shutil.which('node'),['--version']),
                'Astro':legacy.package_version(project,'astro'),'VitePress':legacy.package_version(project,'vitepress')},
         jobs=[],samples=a.samples,warmups=a.warmups)
     if not result['tools']['Hugo']['version'].startswith('hugo v0.167.0'):
