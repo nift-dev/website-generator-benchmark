@@ -66,3 +66,9 @@ is retired; use Git history for its old implementation and methodology.
 
 New reports are published in the Nift Labs benchmark family. Local pilot outputs
 are validation evidence, not official comparative results.
+
+### Explicit-target scaling supplement
+
+`python3 scripts/targeted_campaign.py --nift /absolute/path/to/nift --samples 5 --warmups 1 --output evidence/targeted-builds.json` measures 100, 1,000 and 10,000-page corpora. Run serially with `taskset -c 0`; Nift 4.7.2 and a C compiler are required. Each pair creates a fresh fixture and measures a full build, then changes one leaf and measures `nift build page-1`. Complete content/route checks, unchanged unrelated page bytes, and equality with an untimed full rebuild gate every target sample. Fixture creation and validation are outside timing; OS caches are uncontrolled.
+
+This supplemental run uses a separate disposable node. Keep its raw samples and machine metadata separate from the original campaign, and use its own full-build reference when interpreting targeted timings. An explicit target is distinct from ordinary dependency-scanning incremental `nift build`.
