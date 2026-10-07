@@ -56,7 +56,7 @@ def isolated_env(home):
     home = Path(home)
     for rel in ('', 'config', 'cache', 'data', 'state'):
         (home/rel).mkdir(parents=True, exist_ok=True)
-    return dict(PATH='/usr/local/bin:/usr/bin:/bin', HOME=str(home),
+    return dict(PATH='/opt/campaign/tools/bin:/usr/local/bin:/usr/bin:/bin', HOME=str(home),
                 XDG_CONFIG_HOME=str(home/'config'), XDG_CACHE_HOME=str(home/'cache'),
                 XDG_DATA_HOME=str(home/'data'), XDG_STATE_HOME=str(home/'state'),
                 ZDOTDIR=str(home), LANG='C.UTF-8', LC_ALL='C.UTF-8', TERM='xterm-256color')
