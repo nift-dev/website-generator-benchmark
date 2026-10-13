@@ -35,7 +35,10 @@ if [ ! -x "$TOOLS/hugo" ] || ! "$TOOLS/hugo" version | head -1 | grep -q "v${HUG
 fi
 
 say "Installing the official Nift release (curl -fsSL https://nift.dev/install | sh)"
-if [ ! -x "$TOOLS/nift" ] || ! "$TOOLS/nift" --version | grep -q "v${NIFT_VERSION}"; then
+if [ -n "${NIFT_BINARY:-}" ]; then
+  [ -x "$NIFT_BINARY" ] || { echo "NIFT_BINARY must be an executable source-built candidate" >&2; exit 1; }
+  if [ "$NIFT_BINARY" != "$TOOLS/nift" ]; then install -m 0755 "$NIFT_BINARY" "$TOOLS/nift"; fi
+elif [ ! -x "$TOOLS/nift" ] || ! "$TOOLS/nift" --version | grep -q "v${NIFT_VERSION}"; then
   curl -fsSL --max-time 60 https://nift.dev/install | NIFT_INSTALL_DIR="$TOOLS" sh
 else
   echo "Nift already installed at $TOOLS/nift"

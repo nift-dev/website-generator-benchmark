@@ -1,0 +1,26 @@
+{
+  "commands": [
+    "taskset -c 0 python3 scripts/campaign.py --nift /opt/campaign/tools/bin/nift --hugo /opt/campaign/tools/bin/hugo --node-project /opt/campaign/website-generator-benchmark --pages 100 --samples 5 --warmups 1 --timeout 1200 --output /opt/campaign/evidence/website-100.json",
+    "taskset -c 0 python3 scripts/campaign.py --nift /opt/campaign/tools/bin/nift --hugo /opt/campaign/tools/bin/hugo --node-project /opt/campaign/website-generator-benchmark --pages 1000 --samples 5 --warmups 1 --timeout 1200 --output /opt/campaign/evidence/website-1000.json",
+    "taskset -c 0 python3 scripts/campaign.py --nift /opt/campaign/tools/bin/nift --hugo /opt/campaign/tools/bin/hugo --node-project /opt/campaign/website-generator-benchmark --pages 10000 --samples 5 --warmups 1 --timeout 1200 --output /opt/campaign/evidence/website-10000.json",
+    "taskset -c 0 python3 scripts/targeted_campaign.py --nift /opt/campaign/tools/bin/nift --expected-nift-version \"$NIFT_CANDIDATE_VERSION\" --expected-nift-sha256 \"$NIFT_CANDIDATE_BINARY_SHA256\" --samples 5 --warmups 1 --output /opt/campaign/evidence/targeted-builds.json"
+  ],
+  "comparators": {
+    "hugo": "0.167.0",
+    "node": "24.21.0",
+    "astro": "7.3.6",
+    "vitepress": "1.6.4"
+  },
+  "baseline": "schema5 100/1000/10000 pages; each11jobs\u00d75measure+1warmup; targeted6jobs\u00d75+1",
+  "gates": [
+    "test_measurement.py",
+    "full generated page content/routes checks everysample",
+    "targeted unrelated-page snapshot unchanged and full rebuild parity",
+    "summarize.py exact distributions",
+    "npm ci committed package-lock; package versions must equal package.json"
+  ],
+  "candidate_source_sha": "7f7e487c47a87e871dfef53345e2b71288008bff",
+  "core_build": "fresh clean detached clone; make -j2; make install PREFIX=/opt/campaign/tools; record actual compiler/default flags/version/binary+library hashes",
+  "measurement_boundary": "existing frozen harness; singleCPU0; uncontrolled OS cache; keep childRSS versus treeRSS limitation explicit",
+  "status": "ready for source candidate; installed comparator identities and complete correctness pilot pending"
+}

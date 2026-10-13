@@ -1,0 +1,13 @@
+{
+  "candidate_source_sha": "7f7e487c47a87e871dfef53345e2b71288008bff",
+  "candidate_version": "4.11.0",
+  "kind": "local-correctness-only-not-performance",
+  "cases_passed": 18,
+  "receipt_sha256": "97f0b02d2cd303754caf31fde3a9be26bbae1b9a7ec4b853607756b5939651ab",
+  "receipt_local": "/tmp/legacy-refresh-7f7e487/website-correctness.json",
+  "test_script_local": "/tmp/legacy-refresh-7f7e487/check-website.py",
+  "scope": "all4 participants100page content/routes; candidate100/1000/10000 full/noop/leaf/shared/targeted; every incremental full-rebuild parity",
+  "measurement_unit_tests": "3 passed",
+  "syntax": "passed",
+  "official_host_gates": "required before measurement"
+}
