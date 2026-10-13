@@ -7,12 +7,13 @@ from campaign import validate,snapshot
 from campaign_measure import measure,isolated_env,metadata,identity,summary
 ROOT=Path(__file__).resolve().parents[1]
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--nift',required=True);ap.add_argument('--output',required=True);ap.add_argument('--samples',type=int,default=5);ap.add_argument('--warmups',type=int,default=1);ap.add_argument('--expected-nift-version',default='4.7.2');ap.add_argument('--expected-nift-sha256');a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--nift',required=True);ap.add_argument('--output',required=True);ap.add_argument('--samples',type=int,default=5);ap.add_argument('--warmups',type=int,default=1);ap.add_argument('--expected-nift-version',default='4.7.2');ap.add_argument('--expected-nift-sha256');ap.add_argument('--same-host-serial',action='store_true');a=ap.parse_args()
  if a.samples<5:ap.error('at least five samples')
  nift=str(Path(a.nift).resolve());dest=Path(a.output);dest.parent.mkdir(parents=True,exist_ok=True)
  result=dict(schema=5,publishable=False,machine=metadata(ROOT),tools={'Nift':identity(nift,['--version'])},samples=a.samples,warmups=a.warmups,jobs=[],notes=['Separate supplemental node; do not pool with original campaign.','Explicit target builds one changed leaf; other pages must remain byte-identical and complete output match full rebuild.','Fresh full reference collected on this node for context; one CPU, one build thread, uncontrolled OS caches.'])
  if result['tools']['Nift']['version'].splitlines()[0].split()[:2] != ['Nift','v'+a.expected_nift_version]:raise RuntimeError('Nift version pin mismatch')
  if a.expected_nift_sha256 and result['tools']['Nift']['sha256']!=a.expected_nift_sha256:raise RuntimeError('Nift binary SHA-256 pin mismatch')
+ if a.same_host_serial:result['notes'][0]='Serial supplemental cohort on the same dedicated host; keep independent raw samples and full-build references, do not pool with main campaign.'
  def save():dest.write_text(json.dumps(result,indent=2)+'\n')
  with tempfile.TemporaryDirectory(prefix='targeted-campaign-') as td:
   base=Path(td);env=isolated_env(base/'home')

@@ -3,7 +3,7 @@
     "taskset -c 0 python3 scripts/campaign.py --nift /opt/campaign/tools/bin/nift --hugo /opt/campaign/tools/bin/hugo --node-project /opt/campaign/website-generator-benchmark --pages 100 --samples 5 --warmups 1 --timeout 1200 --output /opt/campaign/evidence/website-100.json",
     "taskset -c 0 python3 scripts/campaign.py --nift /opt/campaign/tools/bin/nift --hugo /opt/campaign/tools/bin/hugo --node-project /opt/campaign/website-generator-benchmark --pages 1000 --samples 5 --warmups 1 --timeout 1200 --output /opt/campaign/evidence/website-1000.json",
     "taskset -c 0 python3 scripts/campaign.py --nift /opt/campaign/tools/bin/nift --hugo /opt/campaign/tools/bin/hugo --node-project /opt/campaign/website-generator-benchmark --pages 10000 --samples 5 --warmups 1 --timeout 1200 --output /opt/campaign/evidence/website-10000.json",
-    "taskset -c 0 python3 scripts/targeted_campaign.py --nift /opt/campaign/tools/bin/nift --expected-nift-version \"$NIFT_CANDIDATE_VERSION\" --expected-nift-sha256 \"$NIFT_CANDIDATE_BINARY_SHA256\" --samples 5 --warmups 1 --output /opt/campaign/evidence/targeted-builds.json"
+    "taskset -c 0 python3 scripts/targeted_campaign.py --nift /opt/campaign/tools/bin/nift --expected-nift-version \"$NIFT_CANDIDATE_VERSION\" --expected-nift-sha256 \"$NIFT_CANDIDATE_BINARY_SHA256\" --same-host-serial --samples 5 --warmups 1 --output /opt/campaign/evidence/targeted-builds.json"
   ],
   "comparators": {
     "hugo": "0.167.0",
